@@ -1,4 +1,4 @@
-#!./monkey-lang
+#!/usr/bin/env monkey-lang
 
 fill := fn(x, i) {
   xs := []

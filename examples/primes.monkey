@@ -1,4 +1,4 @@
-#!./monkey-lang
+#!/usr/bin/env monkey-lang
 
 prime := fn(n) {
   # Corner cases 

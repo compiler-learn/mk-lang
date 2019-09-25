@@ -1,4 +1,4 @@
-#!./monkey-lang
+#!/usr/bin/env monkey-lang
 
 test := fn(n) {
   if (n % 15 == 0) {

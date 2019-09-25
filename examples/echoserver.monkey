@@ -1,4 +1,4 @@
-#!./monkey-lang
+#!/usr/bin/env monkey-lang
 
 fd := socket("tcp4")
 bind(fd, "0.0.0.0:8000")
