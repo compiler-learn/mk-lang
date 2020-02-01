@@ -1,6 +1,10 @@
 # monkey-lang
 
-[![Build Status](https://cloud.drone.io/api/badges/prologic/monkey-lang/status.svg)](https://cloud.drone.io/prologic/monkey-lang)
+![](https://github.com/prologic/monkey-lang/workflows/Coverage/badge.svg)
+![](https://github.com/prologic/monkey-lang/workflows/Docker/badge.svg)
+![](https://github.com/prologic/monkey-lang/workflows/Go/badge.svg)
+![](https://github.com/prologic/monkey-lang/workflows/ReviewDog/badge.svg)
+
 [![CodeCov](https://codecov.io/gh/prologic/monkey-lang/branch/master/graph/badge.svg)](https://codecov.io/gh/prologic/monkey-lang)
 [![Go Report Card](https://goreportcard.com/badge/prologic/monkey-lang)](https://goreportcard.com/report/prologic/monkey-lang)
 [![GoDoc](https://godoc.org/github.com/prologic/monkey-lang?status.svg)](https://godoc.org/github.com/prologic/monkey-lang) 
