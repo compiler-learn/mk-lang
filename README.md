@@ -51,11 +51,11 @@ Read the book and follow along with the commit history.
 
 See: [Reading Guide](./ReadingGuide.md)
 
-> Please note that whilst reading the awesome books I slihtly modified this
-> version of Monkey-lang in some places. FOr example I opted to have a single
+> Please note that whilst reading the awesome books I slightly modified this
+> version of Monkey-lang in some places. For example I opted to have a single
 > `RETURN` Opcode.
 
-## Quickstart
+## Quick start
 
 ```#!sh
 $ go get github.com/prologic/monkey-lang
@@ -98,7 +98,7 @@ Usage: monkey-lang [options] [<filename>]
 ### Programs
 
 A Monkey program is simply zero or more statements. Statements don't actually
-have to be separated by newlines, only by whitespace. The following is a valid
+have to be separated by newlines, only by white space. The following is a valid
 program (*but you'd probably use newlines in the`if` block in real life*):
 
 ```
@@ -109,7 +109,7 @@ if (s != "") { t := "The end" print(t) }
 // The end
 ```
 
-Between tokens, whitespace and comments
+Between tokens, white space and comments
 (*lines starting with `//` or `#` through to the end of a line*)
 are ignored.
 
@@ -117,7 +117,7 @@ are ignored.
 
 Monkey has the following data types: `null`, `bool`, `int`, `str`, `array`,
 `hash`, and `fn`. The `int` type is a signed 64-bit integer, strings are
-immutable arrays of bytes, arrays are growable arrays
+immutable arrays of bytes, arrays are grow-able arrays
 (*use the `append()` builtin*), and hashes are unordered hash maps.
 Trailing commas are **NOT** allowed after the last element in an array or hash:
 
@@ -136,7 +136,7 @@ hash      | `{} {"a": 1} {"a": 1, "b": 2}`            |
 >> a := 10
 ```
 
-### Artithmetic Expressions
+### Arithmetic Expressions
 
 ```#!sh
 >> a := 10
@@ -417,7 +417,7 @@ Operator   | Types           | Action
 - `upper(str)`
   Returns an uppercased version of `str`.
 - `join(array, sep)`
-  Concatenates `str`s in `arrat` to form a single `str`, with the separator `str` between each element.
+  Concatenates `str`s in `array` to form a single `str`, with the separator `str` between each element.
 - `split(str[, sep])`
   Splits the `str` using given separator `sep`, and returns the parts (excluding the separator) as an `array`. If `sep` is not given or `null`, it splits on whitespace.
 - `find(haystack, needle)
