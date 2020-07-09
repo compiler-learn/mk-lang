@@ -19,7 +19,7 @@ func Max(args ...object.Object) object.Object {
 
 	a := args[0].(*object.Array)
 	// TODO: Make this more generic
-	xs := make([]int, len(a.Elements))
+	xs := []int{}; //make([]int, len(a.Elements))
 	for n, e := range a.Elements {
 		if i, ok := e.(*object.Integer); ok {
 			xs = append(xs, int(i.Value))
