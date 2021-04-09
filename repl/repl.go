@@ -110,8 +110,8 @@ func (r *REPL) Exec(f io.Reader) (state *vm.VMState) {
 	}
 
 	code := c.Bytecode()
+	fmt.Println(code)
 	state.Constants = code.Constants
-
 	machine := vm.NewWithState(code, state)
 	machine.Debug = r.opts.Debug
 	err = machine.Run()

@@ -3,8 +3,11 @@ package compiler
 type SymbolScope string
 
 const (
+	// 内建 builtin
 	BuiltinScope SymbolScope = "BUILTIN"
+	// 全局
 	GlobalScope  SymbolScope = "GLOBAL"
+	// 作用域内 当前block
 	LocalScope   SymbolScope = "LOCAL"
 	FreeScope    SymbolScope = "FREE"
 )

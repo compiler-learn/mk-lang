@@ -39,6 +39,7 @@ func New(input string) *Lexer {
 	return l
 }
 
+// 逐字读取，指针++
 func (l *Lexer) readChar() {
 	l.prevCh = l.ch
 	if l.readPosition >= len(l.input) {
@@ -51,6 +52,7 @@ func (l *Lexer) readChar() {
 	l.readPosition++
 }
 
+// 指针不变，返回将要读取的字符
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
@@ -70,6 +72,7 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.COMMENT
 		tok.Literal = l.readLine()
 	case '=':
+		// 如果是 ==
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()

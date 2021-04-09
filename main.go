@@ -105,6 +105,7 @@ func main() {
 		}
 
 		code := c.Bytecode()
+
 		fmt.Printf("Main:\n%s\n", code.Instructions)
 
 		fmt.Print("Constants:\n")

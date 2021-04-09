@@ -129,15 +129,15 @@ func (s *VMState) ExportedHash() *object.Hash {
 }
 
 type VM struct {
-	Debug bool
+	Debug bool			// 是否debug ？
 
-	state *VMState
+	state *VMState		// 虚拟状态机
 
-	frames      []*Frame
-	framesIndex int
+	frames      []*Frame	// 碎片？
+	framesIndex int			// 碎片索引？
 
-	stack []object.Object
-	sp    int // Always points to the next value. Top of stack is stack[sp-1]
+	stack []object.Object		// 对象栈
+	sp    int // Always points to the next value. Top of stack is stack[sp-1]		stack pointer
 }
 
 func (vm *VM) currentFrame() *Frame {
@@ -212,6 +212,7 @@ func (vm *VM) pop() object.Object {
 	return o
 }
 
+// 执行运算操作
 func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
@@ -273,10 +274,13 @@ func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 		return vm.push(&object.String{Value: strings.Repeat(rightVal, int(leftVal))})
 
 	case leftType == object.BOOLEAN && rightType == object.BOOLEAN:
+		// 最有都是bool值，or | and
 		return vm.executeBinaryBooleanOperation(op, left, right)
 	case leftType == object.INTEGER && rightType == object.INTEGER:
+		// 左右都是数字
 		return vm.executeBinaryIntegerOperation(op, left, right)
 	case leftType == object.STRING && rightType == object.STRING:
+		// 左右都是字符串
 		return vm.executeBinaryStringOperation(op, left, right)
 	default:
 		return fmt.Errorf("unsupported types for binary operation: %s %s",
@@ -284,6 +288,7 @@ func (vm *VM) executeBinaryOperation(op code.Opcode) error {
 	}
 }
 
+// 字符串拼接
 func (vm *VM) executeBinaryStringOperation(
 	op code.Opcode,
 	left, right object.Object,
@@ -298,6 +303,7 @@ func (vm *VM) executeBinaryStringOperation(
 	return vm.push(&object.String{Value: leftValue + rightValue})
 }
 
+// bool 值 or | and 操作
 func (vm *VM) executeBinaryBooleanOperation(
 	op code.Opcode,
 	left, right object.Object,
@@ -319,6 +325,7 @@ func (vm *VM) executeBinaryBooleanOperation(
 	return vm.push(&object.Boolean{Value: result})
 }
 
+// 数字 加减乘除等运算
 func (vm *VM) executeBinaryIntegerOperation(
 	op code.Opcode,
 	left, right object.Object,
@@ -356,18 +363,23 @@ func (vm *VM) executeBinaryIntegerOperation(
 	return vm.push(&object.Integer{Value: result})
 }
 
+// 比较运算
 func (vm *VM) executeComparison(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
 
 	switch op {
 	case code.Equal:
+		// 等于
 		return vm.push(nativeBoolToBooleanObject(left.(object.Comparable).Compare(right) == 0))
 	case code.NotEqual:
+		// !=
 		return vm.push(nativeBoolToBooleanObject(left.(object.Comparable).Compare(right) != 0))
 	case code.GreaterThanEqual:
+		// >=
 		return vm.push(nativeBoolToBooleanObject(left.(object.Comparable).Compare(right) > -1))
 	case code.GreaterThan:
+		// >
 		return vm.push(nativeBoolToBooleanObject(left.(object.Comparable).Compare(right) == 1))
 	default:
 		return fmt.Errorf("unknown operator: %d (%s %s)",
@@ -375,6 +387,7 @@ func (vm *VM) executeComparison(op code.Opcode) error {
 	}
 }
 
+// 位运算 ^
 func (vm *VM) executeBitwiseNotOperator() error {
 	operand := vm.pop()
 	if i, ok := operand.(*object.Integer); ok {
@@ -406,6 +419,7 @@ func (vm *VM) executeMinusOperator() error {
 	return fmt.Errorf("expected int got=%T", operand)
 }
 
+// 设置
 func (vm *VM) executeSetItem(left, index, value object.Object) error {
 	switch {
 	case left.Type() == object.ARRAY && index.Type() == object.INTEGER:
@@ -591,6 +605,8 @@ func (vm *VM) callClosure(cl *object.Closure, numArgs int) error {
 }
 
 func (vm *VM) callBuiltin(builtin *object.Builtin, numArgs int) error {
+	// 从stack获取参数 stack pointer - 参数名称
+	// 2 -> [1, 2, 3] -> 3-2:3 -> [2, 3]
 	args := vm.stack[vm.sp-numArgs : vm.sp]
 
 	result := builtin.Fn(args...)
@@ -644,6 +660,7 @@ func (vm *VM) LastPopped() object.Object {
 	return vm.stack[vm.sp]
 }
 
+// 执行字节码
 func (vm *VM) Run() error {
 	var (
 		ip  int
@@ -657,6 +674,14 @@ func (vm *VM) Run() error {
 		ip = vm.currentFrame().ip
 		ins = vm.currentFrame().Instructions()
 		op = code.Opcode(ins[ip])
+
+		var k []object.Object
+		for _, i := range vm.stack {
+			if i == nil {
+				break
+			}
+			k = append(k, i)
+		}
 
 		if vm.Debug {
 			log.Printf(

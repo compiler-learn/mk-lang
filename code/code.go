@@ -68,29 +68,46 @@ func (o Opcode) String() string {
 }
 
 const (
+	// 加载常量
 	LoadConstant Opcode = iota
+	// 加载内置
 	LoadBuiltin
 	// AssignGlobal ...
+	// 全局分配
 	AssignGlobal
 	// AssignLocal ...
+	// 局部分配
 	AssignLocal
+	// 加载全局
 	LoadGlobal
+	// 绑定全局
 	BindGlobal
+	// 加载局部
 	LoadLocal
 	BindLocal
+	// 加载free
 	LoadFree
+	// 加载模块
 	LoadModule
+	// ?
 	SetSelf
+	// true
 	LoadTrue
 	LoadFalse
 	LoadNull
+	// 获取元素
 	GetItem
+	// 设置元素
 	SetItem
+	// 创建数组
 	MakeArray
+	// 创建hash
 	MakeHash
+	// 创建匿名函数
 	MakeClosure
+	// pop ?
 	Pop
-	// Noop ...
+	// Noop ... ??
 	Noop
 	Add
 	Sub
@@ -104,6 +121,7 @@ const (
 	BitwiseXOR
 	BitwiseAND
 	BitwiseNOT
+	// ?
 	LeftShift
 	RightShift
 	Equal
@@ -112,9 +130,12 @@ const (
 	// GreaterThanEqual ...
 	GreaterThanEqual
 	Minus
+	// jump if
 	JumpIfFalse
 	Jump
+	// 调用函数
 	Call
+	// 返回
 	Return
 	ReturnValue
 )
@@ -175,7 +196,11 @@ func Lookup(op byte) (*Definition, error) {
 	return def, nil
 }
 
+//[43]
+//[4 0 0]
+//[18 0 0 1]
 func Make(op Opcode, operands ...int) []byte {
+	// 操作码 => 对象
 	def, ok := definitions[op]
 	if !ok {
 		return []byte{}
@@ -200,7 +225,6 @@ func Make(op Opcode, operands ...int) []byte {
 		}
 		offset += width
 	}
-
 	return instruction
 }
 

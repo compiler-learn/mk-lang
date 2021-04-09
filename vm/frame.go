@@ -6,9 +6,9 @@ import (
 )
 
 type Frame struct {
-	cl          *object.Closure
-	ip          int
-	basePointer int
+	cl          *object.Closure			// 回调
+	ip          int						// 指令指针，Instruction Pointer
+	basePointer int						// 基础指针
 }
 
 func NewFrame(cl *object.Closure, basePointer int) *Frame {

@@ -21,21 +21,21 @@ type EmittedInstruction struct {
 }
 
 type Scope struct {
-	instructions        code.Instructions
-	lastInstruction     EmittedInstruction
-	previousInstruction EmittedInstruction
+	instructions        code.Instructions		// 操作说明？
+	lastInstruction     EmittedInstruction		// 最后的操作说明
+	previousInstruction EmittedInstruction		// 前一个操作说明
 }
 
 type Compiler struct {
 	Debug bool
 
-	l         int
-	constants []object.Object
+	l         int					// l ?
+	constants []object.Object		// 常量对象
 
-	scopes     []Scope
-	scopeIndex int
+	scopes     []Scope				// 作用域
+	scopeIndex int					// 作用域索引
 
-	symbolTable *SymbolTable
+	symbolTable *SymbolTable		// 字符表
 }
 
 func New() *Compiler {
@@ -93,6 +93,7 @@ func (c *Compiler) enterScope() {
 	c.symbolTable = NewEnclosedSymbolTable(c.symbolTable)
 }
 
+// 离开作用域
 func (c *Compiler) leaveScope() code.Instructions {
 	instructions := c.currentInstructions()
 
@@ -104,6 +105,7 @@ func (c *Compiler) leaveScope() code.Instructions {
 	return instructions
 }
 
+// 添加常量
 func (c *Compiler) addConstant(obj object.Object) int {
 	c.constants = append(c.constants, obj)
 	return len(c.constants) - 1
@@ -180,6 +182,7 @@ func (c *Compiler) addInstruction(ins []byte) int {
 	return posNewInstruction
 }
 
+// ast node to gen code
 func (c *Compiler) Compile(node ast.Node) error {
 	if c.Debug {
 		log.Printf(
@@ -191,16 +194,18 @@ func (c *Compiler) Compile(node ast.Node) error {
 	switch node := node.(type) {
 
 	case *ast.Program:
-		c.l++
+		c.l++		// xx 指针？
+		// 处理所有表达式
 		for _, s := range node.Statements {
+			// 递归自己，处理下一个节点
 			err := c.Compile(s)
 			if err != nil {
 				return err
 			}
 		}
 
-	case *ast.BindExpression:
-		var symbol Symbol
+	case *ast.BindExpression: 		// 变量初始化
+		var symbol Symbol		// table, 作用域，及索引
 
 		if ident, ok := node.Left.(*ast.Identifier); ok {
 			symbol, ok = c.symbolTable.Resolve(ident.Value)
@@ -222,8 +227,10 @@ func (c *Compiler) Compile(node ast.Node) error {
 			}
 
 			if symbol.Scope == GlobalScope {
+				// 全局作用域，增加索引
 				c.emit(code.BindGlobal, symbol.Index)
 			} else {
+				// 局部作用域，增加索引
 				c.emit(code.BindLocal, symbol.Index)
 			}
 		} else {
@@ -231,6 +238,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 
 	case *ast.AssignmentExpression:
+		// 变量赋值
 		if ident, ok := node.Left.(*ast.Identifier); ok {
 			symbol, ok := c.symbolTable.Resolve(ident.Value)
 			if !ok {
@@ -250,6 +258,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 				c.emit(code.AssignLocal, symbol.Index)
 			}
 		} else if ie, ok := node.Left.(*ast.IndexExpression); ok {
+			// 数组
 			c.l++
 			err := c.Compile(ie.Left)
 			c.l--
@@ -277,6 +286,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 
 	case *ast.Identifier:
+		// 变量
 		symbol, ok := c.symbolTable.Resolve(node.Value)
 		if !ok {
 			return fmt.Errorf("undefined variable %s", node.Value)
@@ -285,6 +295,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.loadSymbol(symbol)
 
 	case *ast.ExpressionStatement:
+		// 表达式
 		c.l++
 		err := c.Compile(node.Expression)
 		c.l--
@@ -295,6 +306,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.emit(code.Pop)
 
 	case *ast.BlockStatement:
+		// block {} 代码块
 		c.l++
 		for _, s := range node.Statements {
 			err := c.Compile(s)
@@ -313,6 +325,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 
 	case *ast.IfExpression:
+		// if
 		c.l++
 		err := c.Compile(node.Condition)
 		c.l--
@@ -359,6 +372,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.changeOperand(jumpPos, afterAlternativePos)
 
 	case *ast.WhileExpression:
+		// while
 		jumpConditionPos := len(c.currentInstructions())
 
 		c.l++
@@ -387,6 +401,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.changeOperand(jumpIfFalsePos, afterConsequencePos)
 
 	case *ast.ImportExpression:
+		// import 导入代码
 		c.l++
 		err := c.Compile(node.Name)
 		if err != nil {
@@ -553,6 +568,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.emit(code.LoadConstant, c.addConstant(integer))
 
 	case *ast.FunctionLiteral:
+		// 函数，进入作用域
 		c.enterScope()
 
 		if node.Name != "" {
@@ -630,6 +646,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		c.emit(code.Call, len(node.Arguments))
 
 	case *ast.ReturnStatement:
+		// 返回表达式
 		c.l++
 		err := c.Compile(node.ReturnValue)
 		c.l--

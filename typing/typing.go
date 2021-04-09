@@ -59,7 +59,7 @@ func WithTypes(types ...object.Type) CheckFunc {
 			if i < len(args) && args[i].Type() != t {
 				return fmt.Errorf(
 					"TypeError: %s() expected argument #%d to be `%s` got `%s`",
-					name, (i + 1), t, args[i].Type(),
+					name, i + 1, t, args[i].Type(),
 				)
 			}
 		}

@@ -136,7 +136,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(function) {
 			return function
 		}
-
+		// 获取表达式参数
 		args := evalExpressions(node.Arguments, env)
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
@@ -576,6 +576,7 @@ func evalIdentifier(
 		return val
 	}
 
+	// 内置函数
 	if builtin, ok := builtins.Builtins[node.Value]; ok {
 		return builtin
 	}
@@ -608,6 +609,7 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 		return unwrapReturnValue(Eval(fn.Body, env))
 
 	case *object.Builtin:
+		// 执行内置函数
 		if result := fn.Fn(args...); result != nil {
 			return result
 		}
